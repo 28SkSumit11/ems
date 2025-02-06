@@ -10,7 +10,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DataTableController::class, 'index'])->name('dashboard');
+    Route::get('/', [DataTableController::class, 'index'])->name('index');
     Route::get('/data', [DataTableController::class, 'getData'])->name('data.get');
     Route::get('/export', [DataTableController::class, 'exportCSV'])->name('data.export');
 });
