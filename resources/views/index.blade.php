@@ -1,7 +1,7 @@
 @include('layouts.header')
 
 
-    <div class="container w-75">
+    <div class="container">
         <div class="mt-5 row">
             <div class="col-md-6">
                 <button type="button" id="export" class="btn btn-primary">Export</button>

@@ -17,3 +17,13 @@
 .view{
     cursor: pointer;
 }
+
+.btn{
+    background: #d30000;
+    border-color: #d30000;
+    cursor: pointer;
+}
+
+#viewModal .modal-dialog{
+    max-width: 800px;
+}

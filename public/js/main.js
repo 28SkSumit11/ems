@@ -86,9 +86,10 @@ $(document).ready(function() {
                 // View Modal
                 $(".view").click(function(){
                     console.log('view');
+                    var formId = $("#form_id").val();
                     var id = $(this).data('subid');
                     $.ajax({
-                        url: '/view/' + id,
+                        url: '/view/' + formId + '/' + id,
                         type: 'GET',
                         success: function(response){
                             console.log(response);

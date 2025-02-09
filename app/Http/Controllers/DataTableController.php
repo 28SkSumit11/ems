@@ -271,20 +271,26 @@ class DataTableController extends Controller
     }
 
 
-    public function view($id){
+    public function view($form_id, $id){
         $data = DB::table('wp_fluentform_entry_details')->where('submission_id', $id)->get();
         $row = '';
+        $keyArr = ['5' =>
+            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY'],
+
+            '6' =>
+            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
+        ];
 
         foreach ($data as $item) {
             $arr = explode('_', $item->field_name);
-            if(in_array('file-upload', $arr)){
-                $row .= '<tr><td>'.$item->field_name.'</td><td><a href="'.$item->field_value.'" target="_blank">Click here</a></td></tr>';
-            }else{
-                $row .= '<tr><td>'.$item->field_name.'</td><td>'.$item->field_value.'</td></tr>';
+            if(!str_contains($item->field_name, 'email_1')){
+                if(in_array('file-upload', $arr)){
+                    $row .= '<tr><td>'.$keyArr[$form_id][$item->field_name].'</td><td><a href="'.$item->field_value.'" target="_blank">Click here</a></td></tr>';
+                }else{
+                    $row .= '<tr><td>'.$keyArr[$form_id][$item->field_name].'</td><td>'.$item->field_value.'</td></tr>';
+                }
             }
         }
-
-
 
         return $row;
     }
