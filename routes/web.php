@@ -11,6 +11,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware([CheckLoggedIn::class])->group(function(){
     Route::get('/', [DataTableController::class, 'index'])->name('index');
-    Route::post('/data', [DataTableController::class, 'getData'])->name('data.get');
-    Route::post('/export', [DataTableController::class, 'exportCSV'])->name('data.export');
+    Route::get('/data', [DataTableController::class, 'getData'])->name('data.get');
+    Route::get('/view/{id}', [DataTableController::class, 'view'])->name('data.view');
+    Route::get('/export', [DataTableController::class, 'exportCSV'])->name('data.export');
 });
