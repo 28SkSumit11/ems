@@ -1,6 +1,6 @@
 @include('layouts.header')
 
-
+<?php //dd(session('formattedData')) ?>
     <div class="container">
         <div class="mt-5 row">
             <div class="col-md-6">

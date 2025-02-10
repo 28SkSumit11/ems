@@ -39,7 +39,7 @@ $(document).ready(function () {
         if ($.fn.DataTable.isDataTable('#example')) {
             $('#example').DataTable().destroy(); // Destroy previous DataTable instance
         }
-        console.log(startDate, endDate);
+        console.log(startDate, endDate, formId, $('#dateFilter').val());
         $('#example').DataTable({
             processing: true,
             serverSide: true,
@@ -53,13 +53,19 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
-                console.log("AJAX Error:", xhr.responseText);
+                console.log("AJAX Request Failed");
+                console.log("Status: " + status);
+                console.log("Error: " + error);
+                console.log("Response Text: " + xhr.responseText);
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'name', name: 'name' },
                 { data: 'datetime', name: 'datetime' },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                { data: 'action', name: 'action', orderable: false, searchable: false, render: function (data, type, row) {
+                    // Render the HTML content in the 'action' column
+                    return data;
+                } }
             ],
             order: [[0, 'desc']],
             deferRender: true,

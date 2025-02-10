@@ -20,107 +20,85 @@ class DataTableController extends Controller
     public function getData(Request $request)
     {
         if ($request->ajax()) {
-            $form_id = $request->form_id;
-            $dateRange = $request->date_range;
-            $start_date = $request->start_date; // Example: "2025-01-01"
-            $end_date = $request->end_date;     // Example: "2025-01-15"
+            $form_id = $request->get('form_id');
+            $dateRange = $request->get('date_range');
+            $start_date = $request->get('start_date'); // Example: "2025-01-01"
+            $end_date = $request->get('end_date');     // Example: "2025-01-15"
 
-            // $form_id = 8;
-            // $dateRange = '8';
-            // $start_date = null; // Example: "2025-01-01"
-            // $end_date = null;     // Example: "2025-01-15"
-
-            // Convert dates to Carbon instances
-            $start = $start_date ? Carbon::parse($start_date)->format('Y-m-d') : null;
-            $end = $end_date ? Carbon::parse($end_date)->format('Y-m-d') : null;
+            $form_id = 8;
+            $dateRange = '5';
+            $start_date = "2025-01-01"; // Example: "2025-01-01"
+            $end_date = "2025-01-15";   // Example: "2025-01-15"
 
 
             // Fetch data from the database
-            $query = DB::table('wp_fluentform_entry_details')
-                ->where('form_id', $form_id);
+            $query = DB::table('wp_fluentform_submissions')
+                    ->select('id', 'form_id', 'response', 'created_at')
+                    ->where('form_id', $form_id);
 
             // Apply filtering based on the selected date range
-            if ($dateRange == 'custom' && $start && $end) {
-                $query->whereBetween(
-                    DB::raw("STR_TO_DATE(field_value, '%d-%b-%y')"),
-                    [$start, $end]
-                );
+            if ($dateRange == 'custom' && $start_date && $end_date) {
+                [$startDate, $endDate] = $this->getDateRange($dateRange, $start_date, $end_date);
+                $query->whereBetween('created_at', [$startDate, $endDate])
+                ->orderBy('created_at', 'DESC');
             } else {
                 [$startDate, $endDate] = $this->getDateRange($dateRange);
-
                 if ($startDate && $endDate) {
-                    $query->whereBetween(
-                        DB::raw("STR_TO_DATE(field_value, '%d-%b-%y')"),
-                        [$startDate, $endDate]
-                    );
+                    $query->whereBetween('created_at', [$startDate, $endDate])
+                    ->orderBy('created_at', 'DESC');
                 }
             }
 
-            // $start = $request->get('start'); // Start index
-            // $length = $request->get('length'); // Number of records per page
-
-            $start = 0; // Start index
-            $length = 10; // Number of records per page
 
             // Fetch and group the data
-            $totalRecords = $query->distinct('submission_id')->count();
-            // dd($totalRecords);
+            $totalRecords = $query->distinct('form_id')->count();
 
-            $submissionIds = $query->distinct('submission_id')
-                // ->offset($start)
-                // ->limit($length)
-                ->pluck('submission_id');
 
-            // Fetch the full data for the given submission_ids
-            $data = $query->whereIn('submission_id', $submissionIds)
-                ->get();
-
+            $data = $query->get();
+            
             // Calculate total records for pagination
-            $totalRecords = $query->distinct('submission_id')->count();
+            // $totalRecords = $query->distinct('submission_id')->count();
 
             // Format the data to group by submission_id
             $formattedData = [];
             foreach ($data as $entry) {
-                if (!isset($formattedData[$entry->submission_id])) {
-                    $formattedData[$entry->submission_id] = [
-                        'id' => $entry->submission_id,
-                        'name' => '',
-                        'datetime' => '',
-                        'action' => '<i class="fa-solid fa-eye view" data-subId = '.$entry->submission_id.'></i>',
+                $submission_id = $entry->id;
+                $response = json_decode($entry->response);
+                if (isset($submission_id)) {
+                    $date = $response->datetime; // Input date in DD-MM-YYYY format
+                    if (Carbon::hasFormat($date, 'd-m-Y')) {
+                        $formattedDate = Carbon::createFromFormat('d-m-Y', $date)->format('d-M-Y');
+                    } else {
+                        $formattedDate = $date; // If not in the expected format, use the original date
+                    }
+                    $formattedData[$submission_id] = [
+                        'id' => $submission_id,
+                        'name' => $response->names->first_name,
+                        'datetime' => $formattedDate,
+                        'action' => '<i class="fa-solid fa-eye view" data-subId="' . $submission_id . '"></i>',
                     ];
+
                 }
 
-                // Fill name and datetime based on field_name
-                if ($entry->field_name == 'datetime') {
-                    $formattedData[$entry->submission_id]['datetime'] = $entry->field_value;
-                }
-
-                if ($entry->field_name == 'names') {
-                    $formattedData[$entry->submission_id]['name'] = $entry->field_value;
-                }
             }
-
-            // Apply Date Range Filter
-            // $formattedData = $this->applyDateFilter($formattedData, $dateRange);
 
             // ✅ Implement Pagination, Sorting, and Searching
             $totalRecords = count($formattedData);
 
-
-
             // Get DataTable parameters
             $draw = $request->get('draw');
+            // $start = 0;
+            // $length = 10;
             $start = $request->get('start'); // Start index
             $length = $request->get('length'); // Number of records per page
             $searchValue = $request->get('search')['value']; // Search value
             $orderColumnIndex = $request->get('order')[0]['column'] ?? 0; // Column index to sort
             $orderDirection = $request->get('order')[0]['dir'] ?? 'asc'; // Sort direction (asc/desc)
-
-            // Convert column index to column name
+        
             $columns = ['id', 'name', 'datetime', 'action'];
             $orderBy = $columns[$orderColumnIndex] ?? 'id';
 
-            // ✅ Apply Searching
+    
             if (!empty($searchValue)) {
                 $formattedData = array_filter($formattedData, function ($row) use ($searchValue) {
                     return
@@ -130,27 +108,28 @@ class DataTableController extends Controller
                 });
             }
 
-            // ✅ Apply Sorting
+            
             usort($formattedData, function ($a, $b) use ($orderBy, $orderDirection) {
                 return $orderDirection === 'asc'
                     ? strcmp($a[$orderBy], $b[$orderBy])
                     : strcmp($b[$orderBy], $a[$orderBy]);
             });
 
-            // ✅ Apply Pagination
+            
             $paginatedData = array_slice($formattedData, $start, $length);
             session(['formattedData' => $formattedData]);
-
+            
             return response()->json([
-                'draw' => intval($draw),
+                'draw' => $draw,
                 'recordsTotal' => $totalRecords,
                 'recordsFiltered' => $totalRecords,
                 'data' => array_values($paginatedData),
             ]);
+            // dd($dj);
         }
     }
 
-    private function getDateRange($dateRange)
+    private function getDateRange($dateRange, $startDate = null, $endDate = null)
     {
         $currentDate = Carbon::now();
 
@@ -177,6 +156,8 @@ class DataTableController extends Controller
                 ];
             case '8': // Lifetime (No Filtering)
                 return [null, null];
+            case 'custom':
+                return [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()];
             default: // Today (Default)
                 return [$currentDate->copy()->startOfDay(), $currentDate->copy()->endOfDay()];
         }
