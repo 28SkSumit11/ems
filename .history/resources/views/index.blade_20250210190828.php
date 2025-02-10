@@ -4,7 +4,7 @@
     <div class="container">
         <div class="mt-5 row">
             <div class="col-md-6">
-                <a href="" id="export" class="btn btn-primary" target="_blank">Export</a>
+                <a href="" id="export" class="btn btn-primary">Export</a>
             </div>
             <div class="col-md-6 justify-content-end">
                 <div class="row">
@@ -43,7 +43,7 @@
                                 </label>
                                 <button id="applyCustomRange" class="mt-3 btn btn-primary w-50">Apply</button>
                             </div>
-                        </div>
+                        </div>                      
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 <th scope="col">Action</th>
             </tr>
             </thead>
-
+        
         </table>
     </div>
 @include('layouts.footer')

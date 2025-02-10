@@ -41,8 +41,8 @@ $(document).ready(function () {
         }
         console.log(startDate, endDate);
         $('#example').DataTable({
-            processing: true,
-            serverSide: true,
+            // processing: true,
+            // serverSide: true,
             ajax: {
                 url: dataGetUrl,
                 data: function (d) {
@@ -64,9 +64,7 @@ $(document).ready(function () {
             order: [[0, 'desc']],
             deferRender: true,
             initComplete: function (settings, json) {
-                formId = $("#form_id").val();
                 console.log("DataTable table loaded successfully!");
-                $("#export").attr('href', 'export/' + formId);
                 // View Modal
                 $(".view").click(function () {
                     console.log('view');
@@ -117,5 +115,7 @@ $(document).ready(function () {
         formId = $(this).val();
         $('#example').DataTable().ajax.reload();
     });
+
+
 
 });

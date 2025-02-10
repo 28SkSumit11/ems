@@ -33,7 +33,7 @@ $(document).ready(function () {
     });
 
     var dataGetUrl = document.querySelector('meta[name="data-get-url"]').content;
-    var formId = $("#form_id").val();
+    // var formId = $("#form_id").val();
 
     function loadTable(startDate = null, endDate = null) {
         if ($.fn.DataTable.isDataTable('#example')) {
@@ -64,9 +64,9 @@ $(document).ready(function () {
             order: [[0, 'desc']],
             deferRender: true,
             initComplete: function (settings, json) {
-                formId = $("#form_id").val();
+                var formId = $("#form_id").val();
                 console.log("DataTable table loaded successfully!");
-                $("#export").attr('href', 'export/' + formId);
+                $("#export").attr('href', '/export/' + formId);
                 // View Modal
                 $(".view").click(function () {
                     console.log('view');

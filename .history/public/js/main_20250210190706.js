@@ -64,9 +64,7 @@ $(document).ready(function () {
             order: [[0, 'desc']],
             deferRender: true,
             initComplete: function (settings, json) {
-                formId = $("#form_id").val();
                 console.log("DataTable table loaded successfully!");
-                $("#export").attr('href', 'export/' + formId);
                 // View Modal
                 $(".view").click(function () {
                     console.log('view');

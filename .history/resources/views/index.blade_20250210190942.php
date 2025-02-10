@@ -4,7 +4,7 @@
     <div class="container">
         <div class="mt-5 row">
             <div class="col-md-6">
-                <a href="" id="export" class="btn btn-primary" target="_blank">Export</a>
+                <a href="" id="export" class="btn btn-primary">Export</a>
             </div>
             <div class="col-md-6 justify-content-end">
                 <div class="row">

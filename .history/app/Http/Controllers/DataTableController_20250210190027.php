@@ -292,7 +292,8 @@ class DataTableController extends Controller
             ->get();
 
         // Extract unique headers
-        $header = $entries->pluck('field_name')->unique()->toArray();
+        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
+        // dd($header);
 
         // Structure data
         $groupedEntries = $entries->groupBy('submission_id');
@@ -308,10 +309,11 @@ class DataTableController extends Controller
 
         $filename = 'EMS.csv';
 
+        dd($rows);
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
         ob_start();
-        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
+
         fputcsv($handle, $header);
         foreach ($rows as $row) {
             fputcsv($handle, $row);

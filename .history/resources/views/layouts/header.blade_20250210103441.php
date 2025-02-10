@@ -18,29 +18,29 @@
 </head>
 
 <body>
-<nav class="{{ Route::currentRouteName() == 'login' ? 'd-none' : '' }} navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">
             {{-- <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200"> --}}
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li>
-                    <a class="dropdown-item" href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Log Out
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i>
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                    </form>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Log Out
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </li>
+                    </ul>
                 </li>
-                </ul>
-            </li>
             </ul>
         </div>
     </div>

@@ -293,6 +293,7 @@ class DataTableController extends Controller
 
         // Extract unique headers
         $header = $entries->pluck('field_name')->unique()->toArray();
+        // dd($header);
 
         // Structure data
         $groupedEntries = $entries->groupBy('submission_id');

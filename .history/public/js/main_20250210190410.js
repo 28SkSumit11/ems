@@ -64,9 +64,7 @@ $(document).ready(function () {
             order: [[0, 'desc']],
             deferRender: true,
             initComplete: function (settings, json) {
-                formId = $("#form_id").val();
                 console.log("DataTable table loaded successfully!");
-                $("#export").attr('href', 'export/' + formId);
                 // View Modal
                 $(".view").click(function () {
                     console.log('view');
@@ -116,6 +114,18 @@ $(document).ready(function () {
     $("#form_id").change(function () {
         formId = $(this).val();
         $('#example').DataTable().ajax.reload();
+    });
+
+    $("#export").click(function () {
+        var formId = $("#form_id").val();
+        $.ajax({
+            url: '/export/' + formId,
+            type: 'GET',
+            success: function (response) {
+                console.log(response);
+                window.location.href = response;
+            }
+        })
     });
 
 });

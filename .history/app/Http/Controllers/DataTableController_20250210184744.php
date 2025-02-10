@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Response;
 
 class DataTableController extends Controller
 {
@@ -268,23 +267,13 @@ class DataTableController extends Controller
         return $row;
     }
 
-    public function exportCSV(Request $request, $form_id){
+    public function exportCSV(Request $request){
         $data = session('formattedData');
         if (!$data) {
             return back()->with('error', 'No data available for export.');
         }
 
         $submissionIds = collect($data)->pluck('id')->toArray();
-
-        $keyArr = ['5' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY'],
-
-            '6' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
-
-            '8' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'COVERAGE TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'INSSUER NAME', 'datetime' => 'ISSUE DATE', 'input_text' => 'REGISTRATION NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'KYC-ID PROOF', 'file-upload_1' => 'KYC-ADDRESS PROOF OF PROPOSER', 'file-upload_3' => 'VEHICLE RC (FRONT)', 'file-upload_4' => 'VEHICLE RC (BACK)', 'file-upload_5' => 'PYP', 'file-upload_6' => 'POLICY COPY', 'file-upload_8' => 'INVOICE COPY', 'file-upload_9' => 'INVOICE COPY', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT', 'input_radio' => 'PRODUCT TYPE'],
-        ];
 
         // Fetch all entries at once
         $entries = DB::table('wp_fluentform_entry_details')
@@ -311,7 +300,7 @@ class DataTableController extends Controller
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
         ob_start();
-        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
+
         fputcsv($handle, $header);
         foreach ($rows as $row) {
             fputcsv($handle, $row);

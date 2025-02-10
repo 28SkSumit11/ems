@@ -268,7 +268,7 @@ class DataTableController extends Controller
         return $row;
     }
 
-    public function exportCSV(Request $request, $form_id){
+    public function exportCSV(Request $request){
         $data = session('formattedData');
         if (!$data) {
             return back()->with('error', 'No data available for export.');
@@ -293,6 +293,7 @@ class DataTableController extends Controller
 
         // Extract unique headers
         $header = $entries->pluck('field_name')->unique()->toArray();
+        dd($header);
 
         // Structure data
         $groupedEntries = $entries->groupBy('submission_id');
@@ -311,7 +312,7 @@ class DataTableController extends Controller
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
         ob_start();
-        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
+
         fputcsv($handle, $header);
         foreach ($rows as $row) {
             fputcsv($handle, $row);

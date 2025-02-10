@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Response;
 
 class DataTableController extends Controller
 {
@@ -237,9 +236,6 @@ class DataTableController extends Controller
 
             '6' =>
             ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
-
-            '8' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'COVERAGE TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'INSSUER NAME', 'datetime' => 'ISSUE DATE', 'input_text' => 'REGISTRATION NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'KYC-ID PROOF', 'file-upload_1' => 'KYC-ADDRESS PROOF OF PROPOSER', 'file-upload_3' => 'VEHICLE RC (FRONT)', 'file-upload_4' => 'VEHICLE RC (BACK)', 'file-upload_5' => 'PYP', 'file-upload_6' => 'POLICY COPY', 'file-upload_8' => 'INVOICE COPY', 'file-upload_9' => 'INVOICE COPY', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT', 'input_radio' => 'PRODUCT TYPE'],
         ];
 
         foreach ($data as $item) {
@@ -253,77 +249,38 @@ class DataTableController extends Controller
             }
         }
 
-        // foreach ($data as $item) {
-        //     $arr = explode('_', $item->field_name);
-        //     if(!str_contains($item->field_name, 'email_1')){
-        //         if(in_array('file-upload', $arr)){
-        //             $row .= '<tr><td>'.$item->field_name.'</td><td><a href="'.$item->field_value.'" target="_blank">Click here</a></td></tr>';
-        //         }else{
-        //             $row .= '<tr><td>'.$item->field_name.'</td><td>'.$item->field_value.'</td></tr>';
-        //         }
-        //     }
-        // }
-
-
         return $row;
     }
 
-    public function exportCSV(Request $request, $form_id){
+    public function exportCSV(Request $request){
         $data = session('formattedData');
-        if (!$data) {
-            return back()->with('error', 'No data available for export.');
-        }
+        $header = [];
+        $values = [];
 
-        $submissionIds = collect($data)->pluck('id')->toArray();
+        foreach($data as $item){
+            $id = $item['id'];
+            $entryData = DB::table('wp_fluentform_entry_details')->where('submission_id', $id)->get();
 
-        $keyArr = ['5' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY'],
-
-            '6' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
-
-            '8' =>
-            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'COVERAGE TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'INSSUER NAME', 'datetime' => 'ISSUE DATE', 'input_text' => 'REGISTRATION NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'KYC-ID PROOF', 'file-upload_1' => 'KYC-ADDRESS PROOF OF PROPOSER', 'file-upload_3' => 'VEHICLE RC (FRONT)', 'file-upload_4' => 'VEHICLE RC (BACK)', 'file-upload_5' => 'PYP', 'file-upload_6' => 'POLICY COPY', 'file-upload_8' => 'INVOICE COPY', 'file-upload_9' => 'INVOICE COPY', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT', 'input_radio' => 'PRODUCT TYPE'],
-        ];
-
-        // Fetch all entries at once
-        $entries = DB::table('wp_fluentform_entry_details')
-            ->whereIn('submission_id', $submissionIds)
-            ->get();
-
-        // Extract unique headers
-        $header = $entries->pluck('field_name')->unique()->toArray();
-
-        // Structure data
-        $groupedEntries = $entries->groupBy('submission_id');
-        $rows = [];
-
-        foreach ($submissionIds as $id) {
-            $row = [];
-            foreach ($header as $field) {
-                $row[] = optional($groupedEntries[$id]->firstWhere('field_name', $field))->field_value ?? '';
+            foreach ($entryData as $entry) {
+                if (!in_array($entry->field_name, $header)) {
+                    $header[] = $entry->field_name;
+                }
+                $values[] = $entry->field_value;
             }
-            $rows[] = $row;
         }
 
         $filename = 'EMS.csv';
-
-        // Stream CSV file instead of storing in memory
-        $handle = fopen('php://output', 'w');
-        ob_start();
-        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
+        $handle = fopen($filename, 'w+');
         fputcsv($handle, $header);
-        foreach ($rows as $row) {
-            fputcsv($handle, $row);
-        }
+        fputcsv($handle, $values);
 
         fclose($handle);
-        $csvOutput = ob_get_clean();
 
-        return Response::make($csvOutput, 200, [
+        $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=$filename",
-        ]);
+        ];
+
+        return response()->download($filename, 'data.csv', $headers);
     }
 
 

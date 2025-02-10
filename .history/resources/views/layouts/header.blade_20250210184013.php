@@ -18,12 +18,12 @@
 </head>
 
 <body>
-<nav class="{{ Route::currentRouteName() == 'login' ? 'd-none' : '' }} navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">
             {{-- <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200"> --}}
         </a>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse {{ Route::currentRouteName() }} {{ Route::currentRouteName() == 'login' ? 'd-none' : '' }}" id="navbarNav">
             <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
