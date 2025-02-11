@@ -14,7 +14,7 @@ class LoginController extends Controller
 
     function login(Request $request)
     {
-        if($request->email == 'admin@gmail.com' && $request->password == 'Admin1234#'){
+        if($request->email == 'oparation@ginteja.com' && $request->password == 'Ginteja@2025'){
             Session::put('loggedIn', true);
             return redirect()->route('index');
         }else{

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="data-get-url" content="{{ route('data.get') }}">
+    <link rel="icon" href="{{ asset('/favicon.png') }}" type="image/x-icon"/>
+
 
     <title>EMS</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
@@ -21,7 +23,7 @@
 <nav class="{{ Route::currentRouteName() == 'login' ? 'd-none' : '' }} navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="#">
-            {{-- <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200"> --}}
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" width="200">
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">

@@ -272,36 +272,63 @@ class DataTableController extends Controller
             ->get();
 
         // Extract unique headers
-        $header = [];
+        $header = ['Submission Id Number'];
         $rows = [];
+        $allKeys = [];
+
+        
         foreach ($entries as $item) {
-            // dd($item);
-            $arr = json_decode($item->response);
-            $headerRow = ['Submission Id Number'];
-            $row = [$item->id];
-            foreach($arr as $key=>$it){
-                // dd($keyArr[$form_id], $arr);
-                if($key != 'email_1' && $key != '__fluent_form_embedded_post_id' && $key != '_fluent_form_8_fluent_form_nonce' && $key != '_wp_http_referer' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_5_fluentformnonce' && $key != '_fluentform_5_fluentformnonce'){
-                    $headerRow[] = $keyArr[$form_id][$key];
-                    // var_dump($it);
-                    if (is_object($it) && property_exists($it, 'first_name')) {
-                        $row[] = $it->first_name;
-                    } else {
-                        $row[] = is_array($it) ? json_encode($it) : $it;
-                    }
+            $arr = json_decode($item->response, true);
+            foreach ($arr as $key => $it) {
+                if (!in_array($key, $allKeys) && !in_array($key, [
+                    'email_1', '__fluent_form_embedded_post_id', '_fluent_form_8_fluent_form_nonce',
+                    '_wp_http_referer', '__fluent_form_embded_post_id', '_fluentform_8_fluentformnonce',
+                    '_fluentform_6_fluentformnonce', '_fluentform_5_fluentformnonce'
+                ])) {
+                    $allKeys[] = $key;
                 }
             }
-            $header = $headerRow; // Use only the last header row
+        }
+
+        
+        foreach ($allKeys as $key) {
+            $header[] = $keyArr[$form_id][$key] ?? $key;
+        }
+
+        foreach ($entries as $item) {
+            $arr = json_decode($item->response, true);
+            $row = [$item->id]; // Start row with Submission ID
+            
+            foreach ($allKeys as $key) {
+                if (isset($arr[$key])) {
+                    $value = $arr[$key];
+                    if (is_array($value)) {
+                        $row[] = implode(", ", $value); // Convert array to string
+                    } elseif (is_object($value) && property_exists($value, 'first_name')) {
+                        $row[] = (string)$value->first_name;
+                    } else { 
+                        $value = '="' . $value . '"';         
+                        $row[] = $value;
+                    }
+                } else {
+                    $row[] = '';
+                }
+            }
+
             $rows[] = $row;
         }
+
+
         // dd($header, $rows);
-        $filename = 'EMS.csv';
+        $form_name = ['5' => 'Health', '6' => 'Life/Term', '8' => 'Motor'];
+        $filename = 'EMS_'.$form_name[$form_id].'.csv';
 
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
         ob_start();
         fputcsv($handle, $header);
         foreach ($rows as $row) {
+            $row = array_pad($row, count($header), '');
             fputcsv($handle, $row);
         }
 

@@ -2,7 +2,9 @@
 <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
 
         <div class="login-section container shadow p-3 mb-5 bg-body-tertiary rounded">
-            <h2 class="text-center my-5"><i class="fa-solid fa-user" style="font-size: 100px;"></i></h2>
+            <h2 class="text-center my-5"><img src="{{ asset('/images/logo.png') }}">
+              {{-- <i class="fa-solid fa-user" style="font-size: 100px;"></i> --}}
+            </h2>
 
             @if($errors->any())
                 <div>
