@@ -275,23 +275,22 @@ class DataTableController extends Controller
         $header = [];
         $rows = [];
         foreach ($entries as $item) {
-            // dd($item);
+            // dd($key, $item);
             $arr = json_decode($item->response);
-            $headerRow = ['Submission Id Number'];
-            $row = [$item->id];
+            $hrow = [];
+            $row = [];
             foreach($arr as $key=>$it){
                 // dd($keyArr[$form_id], $arr);
-                if($key != 'email_1' && $key != '__fluent_form_embedded_post_id' && $key != '_fluent_form_8_fluent_form_nonce' && $key != '_wp_http_referer' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_5_fluentformnonce' && $key != '_fluentform_5_fluentformnonce'){
-                    $headerRow[] = $keyArr[$form_id][$key];
-                    // var_dump($it);
-                    if (is_object($it) && property_exists($it, 'first_name')) {
-                        $row[] = $it->first_name;
+                if($key != 'email_1' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce' && $key != '_wp_http_referer'){
+                    $hrow[] = $keyArr[$form_id][$key];
+                    if (is_array($it) && isset($it['first_name'])) {
+                        $row[] = $it['first_name'];
                     } else {
-                        $row[] = is_array($it) ? json_encode($it) : $it;
+                        $row[] = $it;
                     }
                 }
             }
-            $header = $headerRow; // Use only the last header row
+            $header[] = $hrow;
             $rows[] = $row;
         }
         // dd($header, $rows);
@@ -299,7 +298,7 @@ class DataTableController extends Controller
 
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
-        ob_start();
+        ob_start();        
         fputcsv($handle, $header);
         foreach ($rows as $row) {
             fputcsv($handle, $row);

@@ -55,7 +55,7 @@ class DataTableController extends Controller
 
 
             $data = $query->get();
-
+            
             // Calculate total records for pagination
             // $totalRecords = $query->distinct('submission_id')->count();
 
@@ -82,6 +82,9 @@ class DataTableController extends Controller
 
             }
 
+            // ✅ Implement Pagination, Sorting, and Searching
+            $totalRecords = count($formattedData);
+
             // Get DataTable parameters
             $draw = $request->get('draw');
             // $start = 0;
@@ -91,11 +94,11 @@ class DataTableController extends Controller
             $searchValue = $request->get('search')['value']; // Search value
             $orderColumnIndex = $request->get('order')[0]['column'] ?? 0; // Column index to sort
             $orderDirection = $request->get('order')[0]['dir'] ?? 'asc'; // Sort direction (asc/desc)
-
+        
             $columns = ['id', 'name', 'datetime', 'action'];
             $orderBy = $columns[$orderColumnIndex] ?? 'id';
 
-
+    
             if (!empty($searchValue)) {
                 $formattedData = array_filter($formattedData, function ($row) use ($searchValue) {
                     return
@@ -105,19 +108,17 @@ class DataTableController extends Controller
                 });
             }
 
-
+            
             usort($formattedData, function ($a, $b) use ($orderBy, $orderDirection) {
                 return $orderDirection === 'asc'
                     ? strcmp($a[$orderBy], $b[$orderBy])
                     : strcmp($b[$orderBy], $a[$orderBy]);
             });
 
-
+            
             $paginatedData = array_slice($formattedData, $start, $length);
             session(['formattedData' => $formattedData]);
-
-            // Pagination
-            $totalRecords = count($formattedData);
+            
             return response()->json([
                 'draw' => $draw,
                 'recordsTotal' => $totalRecords,
@@ -257,49 +258,41 @@ class DataTableController extends Controller
         $submissionIds = collect($data)->pluck('id')->toArray();
 
         $keyArr = ['5' =>
-            ['id' => 'Submission Id Number', 'dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY'],
+            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY'],
 
             '6' =>
-            ['id' => 'Submission Id Number', 'dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
+            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'POLICY TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'NAME OF INSURANCE COMPANY', 'datetime' => 'ISSUE DATE', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'CUSTOMER PAN/GST', 'file-upload_1' => 'KYC OF PROPOSER (PAN/AADHAR - FRONT)', 'file-upload_10' => 'KYC OF PROPOSER (PAN/AADHAR - BACK)', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT'],
 
             '8' =>
-            ['id' => 'Submission Id Number', 'dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'COVERAGE TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'INSSUER NAME', 'datetime' => 'ISSUE DATE', 'input_text' => 'REGISTRATION NUMBER', 'input_text_1' => 'POLICY NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'KYC-ID PROOF', 'file-upload_1' => 'KYC-ADDRESS PROOF OF PROPOSER', 'file-upload_3' => 'VEHICLE RC (FRONT)', 'file-upload_4' => 'VEHICLE RC (BACK)', 'file-upload_5' => 'PYP', 'file-upload_6' => 'POLICY COPY', 'file-upload_7' => 'UNKNOWN FIELD', 'file-upload_8' => 'INVOICE COPY', 'file-upload_9' => 'INVOICE COPY', 'input_radio' => 'PRODUCT TYPE'],
+            ['dropdown' => "RM NAME", 'dropdown_1' => "POSP NAME", "names" => "CUSTOMER NAME", "dropdown_2" => 'PRODUCT TYPE', 'dropdown_3' => 'COVERAGE TYPE', 'phone' => 'CUSTOMER MOBILE NO', 'email' => 'CUSTOMER MAIL ID', 'dropdown_4' => 'INSSUER NAME', 'datetime' => 'ISSUE DATE', 'input_text' => 'REGISTRATION NUMBER', 'numeric_field_1' => 'NET PREMIUM', 'file-upload' => 'KYC-ID PROOF', 'file-upload_1' => 'KYC-ADDRESS PROOF OF PROPOSER', 'file-upload_3' => 'VEHICLE RC (FRONT)', 'file-upload_4' => 'VEHICLE RC (BACK)', 'file-upload_5' => 'PYP', 'file-upload_6' => 'POLICY COPY', 'file-upload_8' => 'INVOICE COPY', 'file-upload_9' => 'INVOICE COPY', 'file-upload_11' => 'POLICY COPY', 'file-upload_12' => 'ILLUSTRATION', 'file-upload_13' => 'PROPOSAL FORM', 'file-upload_14' => 'PROOF OF PAYMENT', 'input_radio' => 'PRODUCT TYPE'],
         ];
 
         // Fetch all entries at once
-        $entries = DB::table('wp_fluentform_submissions')
-            ->whereIn('id', $submissionIds)
+        $entries = DB::table('wp_fluentform_entry_details')
+            ->whereIn('submission_id', $submissionIds)
             ->get();
 
         // Extract unique headers
-        $header = [];
+        $header = $entries->pluck('field_name')->unique()->toArray();
+
+        // Structure data
+        $groupedEntries = $entries->groupBy('submission_id');
         $rows = [];
-        foreach ($entries as $item) {
-            // dd($item);
-            $arr = json_decode($item->response);
-            $headerRow = ['Submission Id Number'];
-            $row = [$item->id];
-            foreach($arr as $key=>$it){
-                // dd($keyArr[$form_id], $arr);
-                if($key != 'email_1' && $key != '__fluent_form_embedded_post_id' && $key != '_fluent_form_8_fluent_form_nonce' && $key != '_wp_http_referer' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_5_fluentformnonce' && $key != '_fluentform_5_fluentformnonce'){
-                    $headerRow[] = $keyArr[$form_id][$key];
-                    // var_dump($it);
-                    if (is_object($it) && property_exists($it, 'first_name')) {
-                        $row[] = $it->first_name;
-                    } else {
-                        $row[] = is_array($it) ? json_encode($it) : $it;
-                    }
-                }
+
+        foreach ($submissionIds as $id) {
+            $row = [];
+            foreach ($header as $field) {
+                $row[] = optional($groupedEntries[$id]->firstWhere('field_name', $field))->field_value ?? '';
             }
-            $header = $headerRow; // Use only the last header row
             $rows[] = $row;
         }
-        // dd($header, $rows);
+
         $filename = 'EMS.csv';
 
         // Stream CSV file instead of storing in memory
         $handle = fopen('php://output', 'w');
         ob_start();
+        $header = array_values(array_intersect_key($keyArr[$form_id], array_flip($entries->pluck('field_name')->unique()->toArray())));
         fputcsv($handle, $header);
         foreach ($rows as $row) {
             fputcsv($handle, $row);

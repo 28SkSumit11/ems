@@ -275,13 +275,13 @@ class DataTableController extends Controller
         $header = [];
         $rows = [];
         foreach ($entries as $item) {
-            // dd($item);
+            dd($item);
             $arr = json_decode($item->response);
             $headerRow = ['Submission Id Number'];
-            $row = [$item->id];
+            $row = [];
             foreach($arr as $key=>$it){
                 // dd($keyArr[$form_id], $arr);
-                if($key != 'email_1' && $key != '__fluent_form_embedded_post_id' && $key != '_fluent_form_8_fluent_form_nonce' && $key != '_wp_http_referer' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_6_fluentformnonce' && $key != '_fluentform_5_fluentformnonce' && $key != '_fluentform_5_fluentformnonce'){
+                if($key != 'email_1' && $key != '__fluent_form_embedded_post_id' && $key != '_fluent_form_8_fluent_form_nonce' && $key != '_wp_http_referer' && $key != '__fluent_form_embded_post_id' && $key != '_fluentform_8_fluentformnonce'){
                     $headerRow[] = $keyArr[$form_id][$key];
                     // var_dump($it);
                     if (is_object($it) && property_exists($it, 'first_name')) {
